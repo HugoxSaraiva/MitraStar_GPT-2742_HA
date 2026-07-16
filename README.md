@@ -17,6 +17,7 @@ flowchart TD
 
     subgraph RC ["RouterClient"]
         L[async_login]
+        SV[async_is_session_valid]
         GD[async_get_connected_devices]
     end
 
@@ -27,11 +28,14 @@ flowchart TD
         ST["/cgi-bin/device-management-statistics.cgi<br/>WiFi station lists"]
     end
 
+    DC -->|session valid?| SV
+    SV -->|no| L
+    SV -->|yes| GD
     L --> LG --> LP
     GD --> DHC
     GD --> ST
     RC -->|Set-Cookie: COOKIE_SESSION_KEY| L
-    RC -->|same session| GD
+    RC -->|CookieJar unsafe=true| GD
 ```
 
 ## Features
@@ -65,17 +69,18 @@ flowchart TD
 1. `GET /cgi-bin/login.cgi` — retrieves a login page containing a `sid` (session ID) in JavaScript
 2. `POST /cgi-bin/login.cgi` — sends `Loginuser`, `LoginPasswordValue = MD5(url_encoded(password).lowercase + ":" + sid)`, `acceptLoginIndex=1`
 3. On success: the response contains `Set-Cookie: COOKIE_SESSION_KEY=...` and a JavaScript redirect to `sophia_index.cgi`
-4. Subsequent requests reuse the same `ClientSession` (the cookie is automatically sent)
+4. The session cookie is stored via `CookieJar(unsafe=True)` and automatically sent on all subsequent requests
+5. `async_is_session_valid()` checks session health by requesting `/cgi-bin/device-management-statistics.cgi` — returns `True` if the page serves (HTTP 200), `False` if redirected to login (HTTP 302)
 
 ## Data Flow
 
-The `RouterClient` manages its own `aiohttp.ClientSession` with `TCPConnector(ssl=False)` (the router runs plain HTTP on port 80). Each poll cycle:
+The `RouterClient` manages its own `aiohttp.ClientSession` with `TCPConnector(ssl=False)` and `CookieJar(unsafe=True)` (the router runs plain HTTP on port 80). Each poll cycle:
 
-1. `async_login()` — authenticates and establishes the session cookie
+1. `async_is_session_valid()` — checks whether the session cookie is still accepted. If invalid, calls `async_login()` to re-authenticate
 2. `async_get_connected_devices()` — fetches two pages:
    - `/cgi-bin/sophia_dhcp_SelectIndex.cgi` — HTML `<select>` listing all DHCP clients with hostname, MAC, and IP
    - `/cgi-bin/device-management-statistics.cgi` — HTML tables of WiFi-connected devices on 2.4 GHz and 5 GHz bands
-3. MACs are deduplicated and returned alongside their hostname mappings
+4. MACs are deduplicated and returned alongside their hostname mappings
 
 ## Component Architecture
 
