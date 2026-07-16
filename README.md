@@ -138,3 +138,7 @@ Tests verify:
 ## License
 
 GNU General Public License v3.0
+
+## Acknowledgments
+
+- [joseska/MitraStar_GPT-2541GNAC_HA](https://github.com/joseska/MitraStar_GPT-2541GNAC_HA) — original implementation that this integration is based on
