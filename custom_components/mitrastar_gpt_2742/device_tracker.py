@@ -17,24 +17,38 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    known_macs: set[str] = set()
+    known_macs = coordinator.known_macs.copy()
+    hostnames = coordinator.data.get("hostnames", {})
+    current_macs = coordinator.data.get("macs", [])
+
+    all_macs = known_macs | set(current_macs)
+    entities = [
+        MitraStarDeviceEntity(coordinator, mac, hostnames.get(mac))
+        for mac in all_macs
+    ]
+    async_add_entities(entities)
+
+    await coordinator.async_save_known_macs(all_macs)
 
     @callback
     def _update_entities() -> None:
         macs = coordinator.data.get("macs", [])
-        hostnames = coordinator.data.get("hostnames", {})
-        new_macs = [m for m in macs if m not in known_macs]
+        hostnames_new = coordinator.data.get("hostnames", {})
+        known = coordinator.known_macs
+        new_macs = [m for m in macs if m not in known]
         if not new_macs:
             return
-        known_macs.update(new_macs)
-        entities = [
-            MitraStarDeviceEntity(coordinator, mac, hostnames.get(mac))
+        known.update(new_macs)
+        new_entities = [
+            MitraStarDeviceEntity(coordinator, mac, hostnames_new.get(mac))
             for mac in new_macs
         ]
-        async_add_entities(entities)
+        async_add_entities(new_entities)
+        coordinator.hass.async_create_task(
+            coordinator.async_save_known_macs(known)
+        )
 
     coordinator.async_add_listener(_update_entities)
-    _update_entities()
 
 
 class MitraStarDeviceEntity(ScannerEntity):
@@ -86,3 +100,7 @@ class MitraStarDeviceEntity(ScannerEntity):
     @property
     def available(self) -> bool:
         return self.coordinator.last_update_success
+
+    async def async_will_remove_from_hass(self) -> None:
+        if hasattr(self, "_coordinator_listener"):
+            self._coordinator_listener()
