@@ -48,6 +48,15 @@ class MitraStarDeviceEntity(ScannerEntity):
         self._hostname = hostname
         self._attr_unique_id = f"{DOMAIN}_{mac}"
         self._attr_name = hostname or mac
+        self._coordinator_listener = (
+            coordinator.async_add_listener(
+                self._handle_coordinator_update
+            )
+        )
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        self.async_write_ha_state()
 
     @property
     def mac_address(self) -> str:
