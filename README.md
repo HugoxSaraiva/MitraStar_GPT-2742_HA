@@ -1,5 +1,10 @@
 # MitraStar GPT-2742 Router — Home Assistant Integration
 
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-31A9F4.svg?style=for-the-badge)](https://github.com/hacs/integration)
+[![GitHub Release](https://img.shields.io/github/release/HugoxSaraiva/MitraStar_GPT-2742_HA.svg?style=for-the-badge&color=blue)](https://github.com/HugoxSaraiva/MitraStar_GPT-2742_HA/releases)
+[![Downloads](https://img.shields.io/github/downloads/HugoxSaraiva/MitraStar_GPT-2742_HA/total.svg?style=for-the-badge&color=blue)](https://github.com/HugoxSaraiva/MitraStar_GPT-2742_HA/releases)
+[![Maintainer](https://img.shields.io/badge/maintainer-@HugoxSaraiva-blue.svg?style=for-the-badge)](https://github.com/HugoxSaraiva)
+
 Device tracker for the MitraStar GPT-2742 router (VIVO branded) using the modern config-flow pattern. Password is stored securely in Home Assistant's encrypted configuration entry storage.
 
 ```mermaid
@@ -39,19 +44,17 @@ flowchart TD
 
 ## Installation
 
-### HACS (recommended)
+[![HACS Repository](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=HugoxSaraiva&repository=MitraStar_GPT-2742_HA&category=integration)
 
-1. Go to **HACS → Integrations → Custom Repositories**
-2. Add `https://github.com/HugoxSaraiva/MitraStar_GPT-2742_HA` as category **Integration**
-3. Click **Install** on the MitraStar GPT-2742 Router card
-4. Restart Home Assistant
-5. Go to **Settings → Devices & Services → Add Integration**
-6. Search for **MitraStar GPT-2742 Router**
-7. Enter the router IP, username (default: `admin`), and password
+1. Click the button above to add the repository to HACS
+2. **Install** via the HACS dashboard
+3. **Restart** Home Assistant
+4. [![Config Flow](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=mitrastar_gpt_2742)
+5. Enter the router IP, username (default: `admin`), and password
 
 ### Manual
 
-1. Copy `custom_components/mitrastar_gpt_2742/` to your Home Assistant `custom_components/` directory
+1. Copy `custom_components/mitrastar_gpt_2742/` into your HA `custom_components/` directory
 2. Restart Home Assistant
 3. Go to **Settings → Devices & Services → Add Integration**
 4. Search for **MitraStar GPT-2742 Router**
@@ -119,6 +122,18 @@ Tests verify:
 - Connected devices return at least one MAC
 - MAC addresses match valid format
 - DHCP hostname MACs are a subset of connected device MACs
+
+## Uninstall
+
+1. **Delete the configuration:** Open the [integrations page](https://my.home-assistant.io/redirect/integration/?domain=mitrastar_gpt_2742), click the 3-dot menu (⋮), and select **Delete**
+2. **Remove the integration files:**
+   - If installed via **HACS**, use the HACS dashboard to remove
+   - Otherwise, delete `custom_components/mitrastar_gpt_2742/`
+3. **Restart** Home Assistant
+
+## Support
+
+- [Open an issue](https://github.com/HugoxSaraiva/MitraStar_GPT-2742_HA/issues)
 
 ## License
 
