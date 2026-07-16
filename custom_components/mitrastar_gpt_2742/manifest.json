@@ -1,0 +1,11 @@
+{
+  "domain": "mitrastar_gpt_2742",
+  "name": "MitraStar GPT-2742 Router",
+  "version": "1.0.0",
+  "config_flow": true,
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": [],
+  "iot_class": "local_polling",
+  "documentation": "https://github.com/joseska/MitraStar_GPT-2541GNAC_HA"
+}
