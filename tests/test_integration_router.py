@@ -7,8 +7,10 @@ Requires environment variables:
 """
 
 import re
+from http.cookies import SimpleCookie
 
 import pytest
+from yarl import URL
 
 from custom_components.mitrastar_gpt_2742.router import RouterClient
 
@@ -64,3 +66,35 @@ class TestRouterConnectedDevices:
                 f"DHCP hostname '{hostname}' MAC {mac} "
                 f"not found in connected devices"
             )
+
+
+@pytest.mark.integration
+class TestRouterSessionValidation:
+    async def test_session_valid_after_login(self, router_client):
+        assert await router_client.async_login()
+        assert await router_client.async_is_session_valid() is True
+
+    async def test_session_invalid_with_garbage_cookies(self, router_client):
+        assert await router_client.async_login()
+        cookie_jar = router_client._session.cookie_jar
+        cookie_jar.clear()
+        sc = SimpleCookie()
+        sc["COOKIE_SESSION_KEY"] = "garbage"
+        cookie_jar.update_cookies(sc, URL(f"http://{router_client.host}/"))
+        assert await router_client.async_is_session_valid() is False
+
+    async def test_session_invalid_before_login(self, router_client):
+        assert await router_client.async_is_session_valid() is False
+
+    async def test_old_session_invalidated_by_new_login(self, router_client):
+        assert await router_client.async_login()
+        assert await router_client.async_is_session_valid() is True
+
+        new_client = RouterClient(
+            router_client.host, router_client.username, router_client.password
+        )
+        assert await new_client.async_login()
+        assert await new_client.async_is_session_valid() is True
+
+        assert await router_client.async_is_session_valid() is False
+        await new_client.close()

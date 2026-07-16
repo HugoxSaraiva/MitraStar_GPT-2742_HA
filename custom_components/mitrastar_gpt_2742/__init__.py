@@ -47,8 +47,9 @@ class MitraStarCoordinator:
     async def _async_update_data(self) -> dict[str, Any]:
         from homeassistant.helpers.update_coordinator import UpdateFailed
 
-        if not await self.client.async_login():
-            raise UpdateFailed("Failed to log in to router")
+        if not await self.client.async_is_session_valid():
+            if not await self.client.async_login():
+                raise UpdateFailed("Failed to log in to router")
 
         macs, hostnames = await self.client.async_get_connected_devices()
 

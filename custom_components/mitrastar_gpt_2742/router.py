@@ -4,6 +4,7 @@ import re
 from typing import Optional
 from urllib.parse import quote
 
+from aiohttp import CookieJar
 import aiohttp
 
 _LOGGER = logging.getLogger(__name__)
@@ -59,7 +60,8 @@ class RouterClient:
     def session(self) -> aiohttp.ClientSession:
         if self._session is None:
             self._session = aiohttp.ClientSession(
-                connector=aiohttp.TCPConnector(ssl=False)
+                connector=aiohttp.TCPConnector(ssl=False),
+                cookie_jar=CookieJar(unsafe=True),
             )
         return self._session
 
@@ -117,6 +119,10 @@ class RouterClient:
         except Exception:
             pass
         return None
+
+    async def async_is_session_valid(self) -> bool:
+        html = await self._read_path(self.STATISTICS_PATH)
+        return html is not None
 
     async def async_get_connected_devices(
         self,
