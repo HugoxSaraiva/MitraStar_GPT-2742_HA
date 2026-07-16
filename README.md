@@ -37,13 +37,25 @@ flowchart TD
 - Modern config-flow setup (no YAML required)
 - Encrypted credential storage via Home Assistant config entry
 
-## Installation (HACS)
+## Installation
 
-1. Copy the `custom_components/mitrastar_gpt_2742` directory to your Home Assistant `custom_components` directory.
-2. Restart Home Assistant.
-3. Go to **Settings → Devices & Services → Add Integration**.
-4. Search for **MitraStar GPT-2742 Router**.
-5. Enter the router IP, username (default: `admin`), and password.
+### HACS (recommended)
+
+1. Go to **HACS → Integrations → Custom Repositories**
+2. Add `https://github.com/HugoxSaraiva/MitraStar_GPT-2742_HA` as category **Integration**
+3. Click **Install** on the MitraStar GPT-2742 Router card
+4. Restart Home Assistant
+5. Go to **Settings → Devices & Services → Add Integration**
+6. Search for **MitraStar GPT-2742 Router**
+7. Enter the router IP, username (default: `admin`), and password
+
+### Manual
+
+1. Copy `custom_components/mitrastar_gpt_2742/` to your Home Assistant `custom_components/` directory
+2. Restart Home Assistant
+3. Go to **Settings → Devices & Services → Add Integration**
+4. Search for **MitraStar GPT-2742 Router**
+5. Enter the router IP, username (default: `admin`), and password
 
 ## Authentication Flow
 
